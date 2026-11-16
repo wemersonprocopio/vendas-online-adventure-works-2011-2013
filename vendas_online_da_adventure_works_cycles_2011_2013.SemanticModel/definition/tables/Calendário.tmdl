@@ -1,0 +1,70 @@
+/// Tabela de datas contínua (anos completos da primeira à última venda).
+table Calendário
+	lineageTag: e684a24f-8311-4e7a-b3fc-3813481ab208
+	dataCategory: Time
+
+	column Data
+		isUnique
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: fba81e53-f509-4189-84b4-117d940ce61a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Data]
+
+	column Ano
+		formatString: 0
+		lineageTag: 53243ca3-e784-4097-a199-c8f45eba6835
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+	column 'Nº Mês'
+		isHidden
+		lineageTag: e3ec318b-f77a-48bd-8074-53d73bc039df
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nº Mês]
+
+	column Mês
+		lineageTag: 0ba00076-8419-4951-8f6b-305b54d5413a
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: 'Nº Mês'
+
+	column 'Mês Ano'
+		lineageTag: b4df8b1a-617d-4cda-8543-e6f6729b59de
+		isNameInferred
+		sourceColumn: [Mês Ano]
+		sortByColumn: AnoMês
+
+	column AnoMês
+		isHidden
+		lineageTag: 2e9ce51e-a156-49fb-9028-737e2ba74bf1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [AnoMês]
+
+	column Trimestre
+		lineageTag: 9766573a-f5fc-4453-a24b-3c21c189a076
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+	partition Calendário = calculated
+		mode: import
+		source =
+				
+				VAR _PrimeiraVenda = MIN ( vendas[Data do Pedido] )
+				VAR _UltimaVenda = MAX ( vendas[Data do Pedido] )
+				VAR _Datas = CALENDAR ( DATE ( YEAR ( _PrimeiraVenda ), 1, 1 ), DATE ( YEAR ( _UltimaVenda ), 12, 31 ) )
+				RETURN
+				    ADDCOLUMNS (
+				        SELECTCOLUMNS ( _Datas, "Data", [Date] ),
+				        "Ano", YEAR ( [Data] ),
+				        "Nº Mês", MONTH ( [Data] ),
+				        "Mês", UPPER ( LEFT ( FORMAT ( [Data], "mmm", "pt-BR" ), 1 ) ) & MID ( FORMAT ( [Data], "mmm", "pt-BR" ), 2, 2 ),
+				        "Mês Ano", UPPER ( LEFT ( FORMAT ( [Data], "mmm", "pt-BR" ), 1 ) ) & MID ( FORMAT ( [Data], "mmm", "pt-BR" ), 2, 2 ) & "/" & FORMAT ( [Data], "yy" ),
+				        "AnoMês", YEAR ( [Data] ) * 100 + MONTH ( [Data] ),
+				        "Trimestre", "T" & QUARTER ( [Data] )
+				    )
+

@@ -1,0 +1,4 @@
+relationship 'RESULTADOS_ADW_DATA PEDIDO_Calendário_Data'
+	fromColumn: vendas.'Data do Pedido'
+	toColumn: Calendário.Data
+

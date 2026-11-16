@@ -1,0 +1,125 @@
+table vendas
+	lineageTag: 8df84600-304d-418a-854a-57f909778743
+
+	column 'Nº Pedido'
+		dataType: string
+		lineageTag: 033fecb6-41ec-4129-90ae-a6f076dd7d10
+		summarizeBy: none
+		sourceColumn: Nº Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data do Pedido'
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: b7d44d67-c1d1-4a09-9d7d-8ff917d4a03b
+		summarizeBy: none
+		sourceColumn: Data do Pedido
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Categoria do Produto'
+		dataType: string
+		lineageTag: 963e8182-d423-4a14-b405-0b11250c6f1b
+		summarizeBy: none
+		sourceColumn: Categoria do Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Cliente'
+		dataType: int64
+		formatString: #,0
+		lineageTag: 922c9cac-71f2-45ef-bced-3fbd587b6c29
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column 'Nome do Cliente'
+		dataType: string
+		lineageTag: 6614db80-f347-4c7c-af06-74366b9f8477
+		summarizeBy: none
+		sourceColumn: Nome do Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sexo
+		dataType: string
+		lineageTag: a4802e8f-3c28-444a-a273-ee389850ef32
+		summarizeBy: none
+		sourceColumn: Sexo
+
+		annotation SummarizationSetBy = Automatic
+
+	column País
+		dataType: string
+		lineageTag: 45e06a2b-d1dd-4039-88ec-865d497bbbb7
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: PAÍS
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Qtd.Vendida'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bf0775c4-4643-4c5c-bae0-2d4a89aff01e
+		summarizeBy: sum
+		sourceColumn: Qtd.Vendida
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column 'Receita Venda'
+		dataType: decimal
+		isHidden
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 47f7bebc-3a33-433e-9519-8cc871b658b8
+		summarizeBy: sum
+		sourceColumn: Receita Venda
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column 'Custo na Venda'
+		dataType: decimal
+		isHidden
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 20bc1623-feed-414b-bfc8-ba281bb077f1
+		summarizeBy: sum
+		sourceColumn: Custo na Venda
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column 'Lucro na Venda'
+		dataType: decimal
+		isHidden
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: f66ccfcd-c845-4f62-b048-ab6bcdb2f688
+		summarizeBy: sum
+		sourceColumn: Lucro na Venda
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	partition vendas = m
+		mode: import
+		source =
+				let
+				  Origem = Sql.Database("wpdso", "AdventureWorksDW2014"),
+				  #"Navegação 1" = Origem{[Schema = "dbo", Item = "vendas_online_da_adventure_works_cycles_2011_2013"]}[Data],
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Navegação 1",{{"DATA PEDIDO", "Data do Pedido"}, {"ID CLIENTE", "ID Cliente"}, {"LUCRO VENDA", "Lucro na Venda"}, {"Nº PEDIDO", "Nº Pedido"}, {"NOME CLIENTE", "Nome do Cliente"}, {"QTD. VENDIDA", "Qtd.Vendida"}, {"RECEITA VENDA", "Receita Venda"}, {"SEXO", "Sexo"}, {"CUSTO VENDA", "Custo na Venda"}, {"CATEGORIA PRODUTO", "Categoria do Produto"}})
+				in
+				  #"Colunas Renomeadas"
+
+	annotation PBI_ResultType = Table
+

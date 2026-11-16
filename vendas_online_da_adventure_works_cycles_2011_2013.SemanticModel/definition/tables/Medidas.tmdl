@@ -1,0 +1,41 @@
+/// Tabela para organizar as medidas do relatório.
+table Medidas
+	lineageTag: b7b53838-f019-4021-b6b3-62daa4f972f3
+
+	measure 'Receita Total' = SUM ( vendas[Receita Venda] )
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 4a4b39d8-948a-46d8-89ba-47fc954420c3
+
+	/// Receita menos custo do produto (não inclui despesas operacionais).
+	measure 'Lucro Total' = SUM ( vendas[Lucro na Venda] )
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 4052943b-2432-47b0-8c19-dacf46efcec3
+
+	measure 'Quantidade Vendida' = SUM ( vendas[Qtd.Vendida] )
+		formatString: #,0
+		lineageTag: c7c8b753-e017-46f3-abb4-bc7b18f3f9a2
+
+	/// Clientes distintos que compraram no período.
+	measure Clientes = DISTINCTCOUNT ( vendas[ID Cliente] )
+		formatString: #,0
+		lineageTag: 3979c2b9-1190-48be-997e-08704f210b84
+
+	measure 'Total Categorias' = DISTINCTCOUNT ( vendas[Categoria do Produto] )
+		formatString: #,0
+		lineageTag: a26ef480-ec84-4939-98e4-bd25cc5c6881
+
+	/// Custo do produto vendido.
+	measure 'Custo Total' = SUM ( vendas[Custo na Venda] )
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 1ce5ecb7-ff38-401f-95ed-6698273d9363
+
+	column Coluna
+		isHidden
+		lineageTag: 65d7cc0b-5027-4875-a7cf-adcafd83d263
+		isNameInferred
+		sourceColumn: [Coluna]
+
+	partition Medidas = calculated
+		mode: import
+		source = ROW ( "Coluna", BLANK () )
+
